@@ -13,7 +13,7 @@ class Dataset():
             for item in dataset:
                 file.write(f"{str(item['context']).lower()}\n")
                 
-    def save_evaluation_result(retriever_name, result):
+    def save_evaluation_result(self, retriever_name, result):
         output_directory = Path(__file__).parent / "result"
         output_directory.mkdir(parents=True, exist_ok=True)
         

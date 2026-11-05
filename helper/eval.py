@@ -22,10 +22,9 @@ def evaluate(data):
             "reference": reference,
             "context_precision": calculate_average_precision(binary_relevance)
         }
-        
+
         results.append(result)
-        
-        print(result)
+    return result
 
 def _build_evaluation_data(dataset, retrieve_contexts):
     evaluation_data = {
@@ -37,26 +36,24 @@ def _build_evaluation_data(dataset, retrieve_contexts):
     for row in dataset:
         question = str(row["question"]).lower()
         
-        evaluation_data["user_input"].append(question)
+        evaluation_data["question"].append(question)
         evaluation_data["reference"].append(str(row["context"]).lower())
         evaluation_data["candidate"].append([
             str(context).lower() 
             for context in retrieve_contexts(question)
         ])
+       
     return evaluation_data
 
 def evaluate_dense_retriever(retriever, dataset):
     def retrieve_contexts(question):
-        documents = retriever.search(str(question).lower())
-        return [
-            str(document.page_content).lower()
-            for document in documents[:20]
-        ]
-
+        return retriever.search(str(question).lower())
+         
     data = _build_evaluation_data(
         dataset,
         retrieve_contexts,
     )
+
     print("Dense retriever evaluation:")
     return evaluate(data)
 

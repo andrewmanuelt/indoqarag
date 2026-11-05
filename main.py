@@ -19,7 +19,9 @@ def main():
     
 def prepare():
     bm25 = BM25Retriever()
+    
     dense = DenseRetriever() 
+    dense.client()
     
     dataset = Dataset()
     train_dataset = dataset.load_indoqa_dataset('train')
@@ -28,15 +30,14 @@ def prepare():
         os.makedirs('./database/bm25/') 
     dataset.create_bm25_dataset()
     
-    if bm25.database_exists():
+    if not bm25.database_exists():
         documents = [item["context"] for item in train_dataset]
         bm25.create_client(documents)
     bm25.load_retriever()
 
     if not dense.database_exists():
         dense.create_collection(train_dataset)
-    dense.client()
-    
+
     evaluate(dense, bm25, dataset)
     
     

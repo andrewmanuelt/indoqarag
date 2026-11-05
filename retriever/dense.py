@@ -39,10 +39,11 @@ class DenseRetriever():
         retriever = self.vectorstore.as_retriever(
             search_type="mmr",
             search_kwargs={
-                "k": 5,
+                "k": 20,
                 "fetch_k": 30,
                 "lambda_mult": 0.7
             }
         ) 
         
-        return retriever.invoke(str(query).lower())
+        documents = retriever.invoke(str(query).lower())
+        return list(set([str(doc.page_content).lower() for doc in documents]))[:5]

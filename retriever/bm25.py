@@ -3,12 +3,10 @@ from pathlib import Path
 
 import bm25s
 import Stemmer
-
 from nltk.corpus import stopwords
 
 class BM25Retriever():
     def __init__(self, k=30):
-        self.bm25index = None
         self.bm25retriever = None
         self.bm25index_name = os.getenv("BM25_INDEX_PATH", "bm25_index")
         self.k = k
@@ -22,14 +20,20 @@ class BM25Retriever():
         stemmer = Stemmer.Stemmer("indonesian")
         corpus_tokens = bm25s.tokenize(documents, stopwords=stopwords_id, stemmer=stemmer)
         
-        retriever = bm25s.BM25()
-        self.bm25index = retriever.index(corpus_tokens)
-        retriever.save(self.bm25index_name, corpus=documents)
+        self.bm25retriever = bm25s.BM25()
+        self.bm25retriever.index(corpus_tokens)
+        self.bm25retriever.save(self.bm25index_name, corpus=documents)
     
     def load_retriever(self):
+        if not self.database_exists():
+            raise FileNotFoundError(f"Index directory '{self.bm25index_name}' not found. Please run create_client() with documents first.")
         self.bm25retriever = bm25s.BM25.load(self.bm25index_name, load_corpus=True)
         
     def search(self, query):
+        if self.bm25retriever is None:
+            self.load_retriever()
+            
+        stopwords_id = stopwords.words("indonesian")
         stemmer = Stemmer.Stemmer("indonesian")
-        query_tokens = bm25s.tokenize(str(query).lower(), stemmer=stemmer)
+        query_tokens = bm25s.tokenize(str(query).lower(), stopwords=stopwords_id, stemmer=stemmer)
         return self.bm25retriever.retrieve(query_tokens, k=self.k)

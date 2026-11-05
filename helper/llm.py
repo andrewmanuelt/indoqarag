@@ -1,7 +1,7 @@
 import ollama
 
 from model.ollama import PrecisionOutput
-from helper.prompt import precision
+from helper.prompt import precision_prompt
 
 def llm(prompt, output_schema):
     response = ollama.chat(
@@ -24,13 +24,13 @@ def llm(prompt, output_schema):
 def calculate_context_precision(question, reference_answer, contexts):
     if not contexts:
         return 0.0
-
+    print(len(contexts))
     context_text = "\n\n".join([
             f"Context [index={i}]: {context}"
             for i, context in enumerate(contexts)
     ])
-
-    prompt = precision(question, reference_answer, context_text)
+  
+    prompt = precision_prompt(question, reference_answer, context_text)
     result = llm(prompt, PrecisionOutput)
     return _index_context_judgments(result.judgments, "verdict", len(contexts))
 

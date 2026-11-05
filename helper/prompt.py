@@ -1,4 +1,4 @@
-def precision(question, reference, context):
+def precision_prompt(question, reference, context):
     prompt = f"""
     You are an information retrieval evaluator.
 
@@ -29,3 +29,5 @@ def precision(question, reference, context):
     6. Return one judgment for every retrieved context.
     7. Follow the required JSON schema exactly.
     """
+    
+    return prompt
