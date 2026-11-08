@@ -4,10 +4,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 
 from helper.dataset import Dataset
-from helper.eval import (
-    evaluate_dense_retriever, 
-    # evaluate_bm25_retriever, evaluate_hybrid_retriever
-)
+from helper.eval import evaluate_dense_retriever
 
 from retriever.bm25 import BM25Retriever
 from retriever.dense import DenseRetriever

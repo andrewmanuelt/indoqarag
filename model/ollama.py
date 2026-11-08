@@ -1,5 +1,6 @@
-from pydantic import BaseModel, Field
-from typing import List
+from typing import Annotated, List
+
+from pydantic import BaseModel, Field, RootModel
 
 
 class ContextJudgment(BaseModel):
@@ -8,8 +9,8 @@ class ContextJudgment(BaseModel):
     reason: str
 
 
-class PrecisionOutput(BaseModel):
-    judgments: List[ContextJudgment]
+class PrecisionOutput(RootModel[dict[str, Annotated[int, Field(strict=True, ge=0, le=1)]]]):
+    pass
 
 
 class GradedContextJudgment(BaseModel):
@@ -27,10 +28,9 @@ class AtomicStatements(BaseModel):
 
 
 class StatementJudgment(BaseModel):
-    statement_index: int
     attributed: int = Field(ge=0, le=1)
     reason: str
 
 
-class RecallOutput(BaseModel):
-    judgments: List[StatementJudgment]
+class RecallOutput(RootModel[dict[str, StatementJudgment]]):
+    pass
